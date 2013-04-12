@@ -31,8 +31,8 @@ This should run on Linux, Mac and Windows with Python 3.
 import os
 from tkinter import *
 from tkinter import ttk
-from tkinter.filedialog import askopenfilename  # Hack to get around a bug.
-from tkinter.filedialog import asksaveasfilename  # Hack to get around a bug.
+from tkinter.filedialog import askopenfilename  # Hack to get around a bug?
+from tkinter.filedialog import asksaveasfilename  # Hack to get around a bug?
 
 def ncdc2seascorr(infile, outfile):
     """Converts a NCDC CSV file to a tab-delimited file seperated by months.
@@ -184,7 +184,8 @@ class MainWindow(Frame):
     def selectinfile(self):
         """Input file selection dialog"""
         self.inFileString.set(askopenfilename(filetypes = [('all files', '.*'),
-                        ('comma-separated values', '.csv')]))
+                        ("tap-separated values", ".tsv"),
+                        ("comma-separated values", ".csv")]))
         self.statusString.set("Please select your files")
         self.checkfilestrings()
 
@@ -199,13 +200,13 @@ class MainWindow(Frame):
         # This is rather convoluted.
         self.statusString.set("Working...")
         rawfile = self.inFileString.get()
-        fl = open(rawfile, 'r')
+        fl = open(rawfile, "r")
         testline = fl.readline()
         fl.close()
-        if testline == 'Year\tMonth\tValue\n':
+        if testline == "Year\tMonth\tValue\n":
             prism2seascorr(infile = rawfile, outfile = self.outFileString.get())
             self.statusString.set("Your reformatted file is ready") 
-        elif testline == 'Source: MJ Menne CN Williams Jr. RS Vose NOAA National Climatic Data Center Asheville, NC\n':
+        elif testline == "Source: MJ Menne CN Williams Jr. RS Vose NOAA National Climatic Data Center Asheville, NC\n":
             ncdc2seascorr(infile = rawfile, outfile = self.outFileString.get())
             self.statusString.set("Your reformatted file is ready")
         else:
