@@ -181,6 +181,12 @@ class MainWindow(Frame):
             child.grid_configure(padx = 2, pady = 2)
         filein_entry.focus()
 
+<<<<<<< HEAD
+=======
+        print(self.inFileString.get())  # DEBUG
+        print(self.outFileString.get())  # DEBUG
+
+>>>>>>> 51ed236bd123ebce7b7ebe29eece39aac98c1e4e
     def selectinfile(self):
         """Input file selection dialog"""
         self.inFileString.set(askopenfilename(filetypes = [('all files', '.*'),
