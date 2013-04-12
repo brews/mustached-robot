@@ -204,12 +204,12 @@ class MainWindow(Frame):
         fl.close()
         if testline == 'Year\tMonth\tValue\n':
             prism2seascorr(infile = rawfile, outfile = self.outFileString.get())
-            self.statusString.set("Your file is ready!") 
+            self.statusString.set("Your reformatted file is ready") 
         elif testline == 'Source: MJ Menne CN Williams Jr. RS Vose NOAA National Climatic Data Center Asheville, NC\n':
             ncdc2seascorr(infile = rawfile, outfile = self.outFileString.get())
             self.statusString.set("Your reformatted file is ready")
         else:
-            self.statusString.set("There appears to be a problem with the file format.")
+            self.statusString.set("There appears to be a problem with the input file format")
 
     def checkfilestrings(self):
         """If inFileString and outFileString then enable convertButton"""
