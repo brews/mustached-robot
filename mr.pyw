@@ -75,6 +75,8 @@ def ncdc2seascorr(infile, outfile):
         outbox.write('\n')
         year = None
         for line in unparsed:  # Parse the unparsed file data.
+            if len(line) == 0:
+                continue
             line = line.split(',')
             if year is None:
                 year = line[1]
@@ -125,6 +127,8 @@ def prism2seascorr(infile, outfile):
         outbox.write('\n')
         year = None
         for line in unparsed:  # Parse the unparsed file data.
+            if len(line) == 0:
+                continue
             line = line.split('\t')
             if year is None:
                 year = line[0].strip()
