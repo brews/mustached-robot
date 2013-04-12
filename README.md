@@ -31,7 +31,7 @@ Help! I have a problem!
 -----------------------
 If you've found a bug, please go ahead and file a bug report on [our bug tracker](https://github.com/brews/mustached-robot/issues). Include a detailed description of what you did and what went wrong.
 
-If you have another issue or your uncomfortable with bug reports you can contact me at malevich@email.arizona.edu. Depending on my work load, it may be a few days before I get back to you.
+If you have another issue or your uncomfortable with bug reports you can contact me at <malevich@email.arizona.edu>. Depending on my work load, it may be a few days before I get back to you.
 
 This is awesome! I want/have elite hacker skillz!
 -------------------------------------------------
