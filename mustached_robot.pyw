@@ -1,10 +1,9 @@
 #! /usr/bin/env python3
-# 2011-09-05
-# v0.20
+# 2013-03-11
 #
-#   Copyright 2011 S. Brewster Malevich <malevich@email.arizona.edu>
+#   Copyright 2013 S. Brewster Malevich <malevich@email.arizona.edu>
 #
-#   pydendro is free software: you can redistribute it and/or modify
+#   mustached-robot is free software: you can redistribute it and/or modify
 #   it under the terms of the GNU General Public License as published by
 #   the Free Software Foundation, either version 3 of the License, or
 #   (at your option) any later version.
@@ -139,65 +138,71 @@ def prism2seascorr(infile, outfile):
                 outbox.write('%s \t' % line[0].strip())
                 outbox.write('%s \t' % line[2].strip())
 
+
 # Begin Tkinter GUI code.
-root = Tk()
-root.title("Madness-to-SEASCORR")
-mainframe = ttk.Frame(root, padding = "3 3 12 12")
-mainframe.grid(column = 0, row = 0, sticky = (N, W, E, S))
-mainframe.columnconfigure(0, weight = 1)
-mainframe.rowconfigure(0, weight = 1)
+class MainWindow(Frame):
+	def __init__(self, parent):
+		super(MainWindow, self).__init__(parent)
+		parent.title("mustached-robot")
+		self.mainframe = ttk.Frame(root, padding = "3 3 12 12")
+		self.mainframe.grid(column = 0, row = 0, sticky = (N, W, E, S))
+		self.mainframe.columnconfigure(0, weight = 1)
+		self.mainframe.rowconfigure(0, weight = 1)
 
-filein = StringVar()
-fileout = StringVar()
-statusmsg = StringVar()
+		self.filein = StringVar()
+		self.fileout = StringVar()
+		self.statusmsg = StringVar()
 
-def startconvert():
-    # This is rather convoluted.
-    statusmsg.set("Working...")
-    rawfile = filein.get()
-    fl = open(rawfile, 'r')
-    testline = fl.readline()
-    fl.close()
-    if testline == 'Year\tMonth\tValue\n':
-        prism2seascorr(infile = rawfile, outfile = fileout.get())
-        statusmsg.set("Your file is ready!") 
-    elif testline == 'Source: MJ Menne CN Williams Jr. RS Vose NOAA National Climatic Data Center Asheville, NC\n':
-        ncdc2seascorr(infile = rawfile, outfile = fileout.get())
-        statusmsg.set("Your file is ready!")
-    else:
-        statusmsg.set("There appears to be a problem with the file format.")
+		filein_entry = ttk.Entry(self.mainframe, text = self.filein, width = 50,
+		                         textvariable = self.filein)
+		filein_entry.grid(column = 0, row = 1, sticky = (E, W))
+		fileout_entry = ttk.Entry(self.mainframe, text = self.fileout, width = 50,
+		                          textvariable = self.fileout)
+		fileout_entry.grid(column = 0, row = 3, sticky = (E, W))
+		ttk.Label(self.mainframe, textvariable = self.statusmsg).grid(column = 0, row = 4,
+		                                                    sticky = W)
+		ttk.Label(self.mainframe, text = "Input:").grid(column = 0, row = 0, sticky = W)
+		ttk.Label(self.mainframe, text = "Destination:").grid(column = 0, row = 2,
+		          sticky = W)
+		ttk.Button(self.mainframe, text = 'Convert',
+		           command = self.startconvert).grid(column = 1, row = 4, sticky = E)
+		ttk.Button(self.mainframe, text = "Select...",
+		           command = self.selectfilein).grid(column = 1, row = 1, sticky = E)
+		ttk.Button(self.mainframe, text = "Select...",
+		           command = self.selectfileout).grid(column = 1, row = 3, sticky = E)
 
-def selectfilein():
-    filein.set(askopenfilename(filetypes = [('all files', '.*'), ('comma-separated values', '.csv')]))
-    statusmsg.set("Please select your files and press 'Convert'...")
+		self.statusmsg.set("Please select your files and press 'Convert'...")
+		for child in self.mainframe.winfo_children():
+		    child.grid_configure(padx = 2, pady = 2)
+		root.bind('<Return>', self.startconvert)
+		filein_entry.focus()
 
-def selectfileout():
-    fileout.set(asksaveasfilename(defaultextension = '.tsv'))
-    statusmsg.set("Please select your files and press 'Convert'...")
+	def startconvert(self):
+	    # This is rather convoluted.
+	    self.statusmsg.set("Working...")
+	    rawfile = self.filein.get()
+	    fl = open(rawfile, 'r')
+	    testline = fl.readline()
+	    fl.close()
+	    if testline == 'Year\tMonth\tValue\n':
+	        prism2seascorr(infile = rawfile, outfile = self.fileout.get())
+	        self.statusmsg.set("Your file is ready!") 
+	    elif testline == 'Source: MJ Menne CN Williams Jr. RS Vose NOAA National Climatic Data Center Asheville, NC\n':
+	        ncdc2seascorr(infile = rawfile, outfile = self.fileout.get())
+	        self.statusmsg.set("Your file is ready!")
+	    else:
+	        self.statusmsg.set("There appears to be a problem with the file format.")
 
-filein_entry = ttk.Entry(mainframe, text = filein, width = 50,
-                         textvariable = filein)
-filein_entry.grid(column = 0, row = 1, sticky = (E, W))
-fileout_entry = ttk.Entry(mainframe, text = fileout, width = 50,
-                          textvariable = fileout)
-fileout_entry.grid(column = 0, row = 3, sticky = (E, W))
-ttk.Label(mainframe, textvariable = statusmsg).grid(column = 0, row = 4,
-                                                    sticky = W)
-ttk.Label(mainframe, text = "Input:").grid(column = 0, row = 0, sticky = W)
-ttk.Label(mainframe, text = "Destination:").grid(column = 0, row = 2,
-          sticky = W)
-ttk.Button(mainframe, text = 'Convert',
-           command = startconvert).grid(column = 1, row = 4, sticky = E)
-ttk.Button(mainframe, text = "Select...",
-           command = selectfilein).grid(column = 1, row = 1, sticky = E)
-ttk.Button(mainframe, text = "Select...",
-           command = selectfileout).grid(column = 1, row = 3, sticky = E)
+	def selectfilein(self):
+	    self.filein.set(askopenfilename(filetypes = [('all files', '.*'), ('comma-separated values', '.csv')]))
+	    self.statusmsg.set("Please select your files and press 'Convert'...")
 
-statusmsg.set("Please select your files and press 'Convert'...")
-for child in mainframe.winfo_children():
-    print(child)
-    child.grid_configure(padx = 2, pady = 2)
-root.bind('<Return>', startconvert)
-filein_entry.focus()
+	def selectfileout(self):
+	    self.fileout.set(asksaveasfilename(defaultextension = '.tsv'))
+	    self.statusmsg.set("Please select your files and press 'Convert'...")
 
-root.mainloop()
+
+if __name__ == "__main__":
+	root = Tk()
+	app = MainWindow(root)
+	root.mainloop()
