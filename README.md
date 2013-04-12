@@ -9,11 +9,11 @@ What does this program do?
 --------------------------
 mustached-robot helps people reformat flat, time-series files of monthly climate data.
 
-This was originally tailored to format input so that it could be read into Dave Meko's "seascorr" MATLAB script, but I've heard that other people have found uses for this.
+This was originally tailored to format input data so that it could be read into Dave Meko's "seascorr" MATLAB script, but I've heard that other people have found uses for this.
 
-I don't know what I'm doing. How do I use this?
+I don't really know what I'm doing. How do I use this?
 -----------------------------------------------
-This program is happy to run on Linux, Mac, or MS Windows.
+This program is happy to run on Linux, Mac, or MS Windows. *However, it is not yet tested on all of these platforms*.
 
 You need to go install a recent [copy of Python](http://www.python.org/download/) version 3.x. Python version 2.x *will not work*.
 
