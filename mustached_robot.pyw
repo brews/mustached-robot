@@ -21,7 +21,9 @@ This is a quick and dirty module to convert NCDC CSV files and data from the
 PRISM website to a tab-delimited file which can be read by seascorr for data
 analysis.
 
-The fuction ncdc2seascorr and prism2seascorr can be used as a module in a script or program, although not yet through Bash shell. There is also a very simple tkinter GUI at the end of this file.
+The fuction ncdc2seascorr and prism2seascorr can be used as a module in a
+script or program, although not yet through Bash shell. There is also a very
+simple tkinter GUI at the end of this file.
 
 This should run on Linux, Mac and Windows with Python 3.
 """
@@ -139,70 +141,75 @@ def prism2seascorr(infile, outfile):
                 outbox.write('%s \t' % line[2].strip())
 
 
-# Begin Tkinter GUI code.
 class MainWindow(Frame):
-	def __init__(self, parent):
-		super(MainWindow, self).__init__(parent)
-		parent.title("mustached-robot")
-		self.mainframe = ttk.Frame(root, padding = "3 3 12 12")
-		self.mainframe.grid(column = 0, row = 0, sticky = (N, W, E, S))
-		self.mainframe.columnconfigure(0, weight = 1)
-		self.mainframe.rowconfigure(0, weight = 1)
+    def __init__(self, parent):
+        super(MainWindow, self).__init__(parent)
+        parent.title("mustached-robot")
+        self.mainframe = ttk.Frame(root, padding = "3 3 12 12")
+        self.mainframe.grid(column = 0, row = 0, sticky = (N, W, E, S))
+        self.mainframe.columnconfigure(0, weight = 1)
+        self.mainframe.rowconfigure(0, weight = 1)
 
-		self.filein = StringVar()
-		self.fileout = StringVar()
-		self.statusmsg = StringVar()
+        self.filein = StringVar()
+        self.fileout = StringVar()
+        self.statusmsg = StringVar()
 
-		filein_entry = ttk.Entry(self.mainframe, text = self.filein, width = 50,
-		                         textvariable = self.filein)
-		filein_entry.grid(column = 0, row = 1, sticky = (E, W))
-		fileout_entry = ttk.Entry(self.mainframe, text = self.fileout, width = 50,
-		                          textvariable = self.fileout)
-		fileout_entry.grid(column = 0, row = 3, sticky = (E, W))
-		ttk.Label(self.mainframe, textvariable = self.statusmsg).grid(column = 0, row = 4,
-		                                                    sticky = W)
-		ttk.Label(self.mainframe, text = "Input:").grid(column = 0, row = 0, sticky = W)
-		ttk.Label(self.mainframe, text = "Destination:").grid(column = 0, row = 2,
-		          sticky = W)
-		ttk.Button(self.mainframe, text = 'Convert',
-		           command = self.startconvert).grid(column = 1, row = 4, sticky = E)
-		ttk.Button(self.mainframe, text = "Select...",
-		           command = self.selectfilein).grid(column = 1, row = 1, sticky = E)
-		ttk.Button(self.mainframe, text = "Select...",
-		           command = self.selectfileout).grid(column = 1, row = 3, sticky = E)
+        filein_entry = ttk.Entry(self.mainframe, text = self.filein, width = 50,
+                                 textvariable = self.filein)
+        filein_entry.grid(column = 0, row = 1, sticky = (E, W))
+        fileout_entry = ttk.Entry(self.mainframe, text = self.fileout, width = 50,
+                                  textvariable = self.fileout)
+        fileout_entry.grid(column = 0, row = 3, sticky = (E, W))
+        ttk.Label(self.mainframe, textvariable = self.statusmsg).grid(column = 0, row = 4,
+                                                            sticky = W)
+        ttk.Label(self.mainframe, text = "Input:").grid(column = 0, row = 0, sticky = W)
+        ttk.Label(self.mainframe, text = "Destination:").grid(column = 0, row = 2,
+                  sticky = W)
+        ttk.Button(self.mainframe, text = 'Convert',
+                   command = self.startconvert).grid(column = 1, row = 4, sticky = E)
+        ttk.Button(self.mainframe, text = "Select...",
+                   command = self.selectfilein).grid(column = 1, row = 1, sticky = E)
+        ttk.Button(self.mainframe, text = "Select...",
+                   command = self.selectfileout).grid(column = 1, row = 3, sticky = E)
 
-		self.statusmsg.set("Please select your files and press 'Convert'...")
-		for child in self.mainframe.winfo_children():
-		    child.grid_configure(padx = 2, pady = 2)
-		root.bind('<Return>', self.startconvert)
-		filein_entry.focus()
+        self.statusmsg.set("Please select your files.")
+        for child in self.mainframe.winfo_children():
+            child.grid_configure(padx = 2, pady = 2)
+        root.bind('<Return>', self.startconvert)
+        filein_entry.focus()
+        # print(self.filein)  # DEBUG
+        # print(self.fileout)  # DEBUG
 
-	def startconvert(self):
-	    # This is rather convoluted.
-	    self.statusmsg.set("Working...")
-	    rawfile = self.filein.get()
-	    fl = open(rawfile, 'r')
-	    testline = fl.readline()
-	    fl.close()
-	    if testline == 'Year\tMonth\tValue\n':
-	        prism2seascorr(infile = rawfile, outfile = self.fileout.get())
-	        self.statusmsg.set("Your file is ready!") 
-	    elif testline == 'Source: MJ Menne CN Williams Jr. RS Vose NOAA National Climatic Data Center Asheville, NC\n':
-	        ncdc2seascorr(infile = rawfile, outfile = self.fileout.get())
-	        self.statusmsg.set("Your file is ready!")
-	    else:
-	        self.statusmsg.set("There appears to be a problem with the file format.")
+    def startconvert(self):
+        """Detects formatting and converts input file to output file"""
+        # This is rather convoluted.
+        self.statusmsg.set("Working...")
+        rawfile = self.filein.get()
+        fl = open(rawfile, 'r')
+        testline = fl.readline()
+        fl.close()
+        if testline == 'Year\tMonth\tValue\n':
+            prism2seascorr(infile = rawfile, outfile = self.fileout.get())
+            self.statusmsg.set("Your file is ready!") 
+        elif testline == 'Source: MJ Menne CN Williams Jr. RS Vose NOAA National Climatic Data Center Asheville, NC\n':
+            ncdc2seascorr(infile = rawfile, outfile = self.fileout.get())
+            self.statusmsg.set("Your file is ready!")
+        else:
+            self.statusmsg.set("There appears to be a problem with the file format.")
 
-	def selectfilein(self):
-	    self.filein.set(askopenfilename(filetypes = [('all files', '.*'), ('comma-separated values', '.csv')]))
-	    self.statusmsg.set("Please select your files and press 'Convert'...")
+    def selectfilein(self):
+        """Input file selection dialog"""
+        self.filein.set(askopenfilename(filetypes = [('all files', '.*'),
+                        ('comma-separated values', '.csv')]))
+        self.statusmsg.set("Please select your files and press 'Convert'...")
 
-	def selectfileout(self):
-	    self.fileout.set(asksaveasfilename(defaultextension = '.tsv'))
-	    self.statusmsg.set("Please select your files and press 'Convert'...")
+    def selectfileout(self):
+        """Output file selection dialog"""
+        self.fileout.set(asksaveasfilename(defaultextension = '.tsv'))
+        self.statusmsg.set("Please select your files and press 'Convert'...")
 
 
 if __name__ == "__main__":
-	root = Tk()
-	app = MainWindow(root)
-	root.mainloop()
+    root = Tk()
+    app = MainWindow(root)
+    root.mainloop()
