@@ -20,12 +20,6 @@
 This is a quick and dirty module to convert NCDC CSV files and data from the
 PRISM website to a tab-delimited file which can be read by seascorr for data
 analysis.
-
-The fuction ncdc2seascorr and prism2seascorr can be used as a module in a
-script or program, although not yet through Bash shell. There is also a very
-simple tkinter GUI at the end of this file.
-
-This should run on Linux, Mac and Windows with Python 3.
 """
 
 import os
