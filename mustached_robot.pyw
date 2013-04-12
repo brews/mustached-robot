@@ -145,68 +145,77 @@ class MainWindow(Frame):
     def __init__(self, parent):
         super(MainWindow, self).__init__(parent)
         parent.title("mustached-robot")
-        self.mainframe = ttk.Frame(root, padding = "3 3 12 12")
-        self.mainframe.grid(column = 0, row = 0, sticky = (N, W, E, S))
-        self.mainframe.columnconfigure(0, weight = 1)
-        self.mainframe.rowconfigure(0, weight = 1)
+        self.mainFrame = ttk.Frame(root, padding = "3 3 12 12")
+        self.mainFrame.grid(column = 0, row = 0, sticky = (N, W, E, S))
+        self.mainFrame.columnconfigure(0, weight = 1)
+        self.mainFrame.rowconfigure(0, weight = 1)
 
-        self.filein = StringVar()
-        self.fileout = StringVar()
-        self.statusmsg = StringVar()
+        self.inFileString = StringVar()
+        self.outFileString = StringVar()
+        self.statusString = StringVar()
 
-        filein_entry = ttk.Entry(self.mainframe, text = self.filein, width = 50,
-                                 textvariable = self.filein)
+        filein_entry = ttk.Entry(self.mainFrame, text = self.inFileString, width = 50,
+                                 textvariable = self.inFileString)
         filein_entry.grid(column = 0, row = 1, sticky = (E, W))
-        fileout_entry = ttk.Entry(self.mainframe, text = self.fileout, width = 50,
-                                  textvariable = self.fileout)
+        fileout_entry = ttk.Entry(self.mainFrame, text = self.outFileString, width = 50,
+                                  textvariable = self.outFileString)
         fileout_entry.grid(column = 0, row = 3, sticky = (E, W))
-        ttk.Label(self.mainframe, textvariable = self.statusmsg).grid(column = 0, row = 4,
+        ttk.Label(self.mainFrame, textvariable = self.statusString).grid(column = 0, row = 4,
                                                             sticky = W)
-        ttk.Label(self.mainframe, text = "Input:").grid(column = 0, row = 0, sticky = W)
-        ttk.Label(self.mainframe, text = "Destination:").grid(column = 0, row = 2,
+        ttk.Label(self.mainFrame, text = "Input:").grid(column = 0, row = 0, sticky = W)
+        ttk.Label(self.mainFrame, text = "Destination:").grid(column = 0, row = 2,
                   sticky = W)
-        ttk.Button(self.mainframe, text = 'Convert',
-                   command = self.startconvert).grid(column = 1, row = 4, sticky = E)
-        ttk.Button(self.mainframe, text = "Select...",
-                   command = self.selectfilein).grid(column = 1, row = 1, sticky = E)
-        ttk.Button(self.mainframe, text = "Select...",
-                   command = self.selectfileout).grid(column = 1, row = 3, sticky = E)
+        self.selectinButton = ttk.Button(self.mainFrame, text = "Select...",
+                                         command = self.selectinfile)
+        self.selectoutButton = ttk.Button(self.mainFrame, text = "Select...",
+                                          command = self.selectoutfile)
+        self.convertButton = ttk.Button(self.mainFrame, text = 'Convert',
+                                        command = self.startconvert,
+                                        state = DISABLED)
+        self.selectinButton.grid(column = 1, row = 1, sticky = E)
+        self.selectoutButton.grid(column = 1, row = 3, sticky = E)
+        self.convertButton.grid(column = 1, row = 4, sticky = E)
 
-        self.statusmsg.set("Please select your files.")
-        for child in self.mainframe.winfo_children():
+        self.statusString.set("Please select your files.")
+        for child in self.mainFrame.winfo_children():
             child.grid_configure(padx = 2, pady = 2)
-        root.bind('<Return>', self.startconvert)
         filein_entry.focus()
-        # print(self.filein)  # DEBUG
-        # print(self.fileout)  # DEBUG
+
+    def selectinfile(self):
+        """Input file selection dialog"""
+        self.inFileString.set(askopenfilename(filetypes = [('all files', '.*'),
+                        ('comma-separated values', '.csv')]))
+        self.statusString.set("Please select your files")
+        self.checkfilestrings()
+
+    def selectoutfile(self):
+        """Output file selection dialog"""
+        self.outFileString.set(asksaveasfilename(defaultextension = '.tsv'))
+        self.statusString.set("Please select your files")
+        self.checkfilestrings()
 
     def startconvert(self):
         """Detects formatting and converts input file to output file"""
         # This is rather convoluted.
-        self.statusmsg.set("Working...")
-        rawfile = self.filein.get()
+        self.statusString.set("Working...")
+        rawfile = self.inFileString.get()
         fl = open(rawfile, 'r')
         testline = fl.readline()
         fl.close()
         if testline == 'Year\tMonth\tValue\n':
-            prism2seascorr(infile = rawfile, outfile = self.fileout.get())
-            self.statusmsg.set("Your file is ready!") 
+            prism2seascorr(infile = rawfile, outfile = self.outFileString.get())
+            self.statusString.set("Your file is ready!") 
         elif testline == 'Source: MJ Menne CN Williams Jr. RS Vose NOAA National Climatic Data Center Asheville, NC\n':
-            ncdc2seascorr(infile = rawfile, outfile = self.fileout.get())
-            self.statusmsg.set("Your file is ready!")
+            ncdc2seascorr(infile = rawfile, outfile = self.outFileString.get())
+            self.statusString.set("Your reformatted file is ready")
         else:
-            self.statusmsg.set("There appears to be a problem with the file format.")
+            self.statusString.set("There appears to be a problem with the file format.")
 
-    def selectfilein(self):
-        """Input file selection dialog"""
-        self.filein.set(askopenfilename(filetypes = [('all files', '.*'),
-                        ('comma-separated values', '.csv')]))
-        self.statusmsg.set("Please select your files and press 'Convert'...")
-
-    def selectfileout(self):
-        """Output file selection dialog"""
-        self.fileout.set(asksaveasfilename(defaultextension = '.tsv'))
-        self.statusmsg.set("Please select your files and press 'Convert'...")
+    def checkfilestrings(self):
+        """If inFileString and outFileString then enable convertButton"""
+        if (len(self.inFileString.get()) > 0) and (len(self.outFileString.get()) > 0):
+            self.convertButton.config(state = NORMAL)
+        self.statusString.set("Select convert when you're ready")
 
 
 if __name__ == "__main__":
